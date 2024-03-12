@@ -15,9 +15,12 @@ namespace Jumia.Model
         public int StockQuantity { get; set; }
         public decimal RealPrice { get; set; }
         public decimal? Discount { get; set; }
-        public HashSet<byte[]>? Images { get; set; }
+        public List<byte[]>? Images { get; set; }
+        public int? BrandID { get; set; }
+        public Brand Brand { get; set; } 
+        // Include for easier presentation
         //[ForeignKey("Category")]
-       // public int CategoryId {  get; set; }
+        // public int CategoryId {  get; set; }
         [ForeignKey("SubCategory")]
         public int SubCategoryID {  get; set; }
        // public virtual Category Category { get; set; }

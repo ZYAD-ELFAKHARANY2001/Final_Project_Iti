@@ -1,6 +1,8 @@
 using Jumia.Application.Contract;
 using Jumia.Application.IServices;
 using Jumia.Application.Services;
+using Jumia.Application.Services.IServices;
+using Jumia.Application.Services.Services;
 using Jumia.Context;
 using Jumia.Infrastructure;
 using Jumia.Model;
@@ -17,7 +19,7 @@ namespace AdminDashBoard
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
-            //builder.Services.AddScoped<IProductRepository, ProductRepository>();
+            builder.Services.AddScoped<IProductRepository, ProductRepository>();
             /* builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
              builder.Services.AddScoped<ISubCategoryRepository, SubCategoryRepository>();
              builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
@@ -30,8 +32,9 @@ namespace AdminDashBoard
             builder.Services.AddScoped<IUserRoleRepository, UserRoleRepository>();
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IRoleService, RoleService>();
+            builder.Services.AddScoped<IProductServices, ProductService>();
 
-            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            //builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IProductServices,ProductService>();
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             builder.Services.AddIdentity<UserIdentity, UserRole>()
