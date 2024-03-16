@@ -34,7 +34,7 @@ namespace AdminDashBoard
             builder.Services.AddScoped<IRoleService, RoleService>();
             builder.Services.AddScoped<IProductServices, ProductService>();
 
-            //builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IProductServices,ProductService>();
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             builder.Services.AddIdentity<UserIdentity, UserRole>()
