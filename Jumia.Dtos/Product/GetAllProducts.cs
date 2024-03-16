@@ -12,7 +12,6 @@ namespace Jumia.Dtos.Product
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public string? LongDescription { get; set; }
         public string? ShortDescription { get; set; }
         public int? StockQuantity { get; set; }
         public decimal RealPrice { get; set; }
@@ -25,14 +24,14 @@ namespace Jumia.Dtos.Product
 
         public GetAllProducts(Jumia.Model.Product product)
         {
-            Id = product.Id;
+           /* Id = product.Id;
             Name = product.Name;
             ShortDescription = product.ShortDescription;
             RealPrice = product.RealPrice;
             Discount = product.Discount;
             SubCategoryID = product.SubCategoryID;
-            BrandID = product.BrandID;
-            StockQuantity = product.StockQuantity;
+            BrandID = product.BrandID;*/
+
             // Include logic to populate SubCategoryName and BrandName based on your data access approach
             // (e.g., eager loading, separate queries)
             if (product.SubCategory != null)
@@ -55,10 +54,6 @@ namespace Jumia.Dtos.Product
 
             // Consider using a dedicated Image class or a simpler representation (e.g., string URLs)
             //Images = product.Images // Assuming byte arrays represent images
-        }
-
-        public GetAllProducts()
-        {
         }
     }
 }

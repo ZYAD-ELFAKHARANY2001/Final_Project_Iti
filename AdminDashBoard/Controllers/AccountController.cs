@@ -1,5 +1,4 @@
-﻿using Jumia.Context.Migrations;
-using Jumia.Dtos.AccountDtos;
+﻿using Jumia.Dtos.AccountDtos;
 using Jumia.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -39,9 +38,6 @@ namespace AdminDashBoard.Controllers
                     var user = new UserIdentity() { UserName = registerDtos.Username, Email = registerDtos.Email, PhoneNumber = registerDtos.Phone };
                     IdentityResult res = await _userManager.CreateAsync(user, registerDtos.Password);
 
-                    
-
-                    
                         if (res.Succeeded && registerDtos.Password == registerDtos.Confirmpass)
                         {
 
