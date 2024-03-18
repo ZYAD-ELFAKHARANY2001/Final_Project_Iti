@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Jumia.Dtos.Category;
 using Jumia.Dtos.Product;
 using Jumia.Dtos.User;
 using Jumia.Model;
@@ -21,6 +22,8 @@ namespace Jumia.Application.Mapper
             CreateMap<GetAllUsers, UserIdentity>().ReverseMap();
             CreateMap<GetAllProducts,Product>().ReverseMap();
             CreateMap<CreateOrUpdateProductDto,Product>().ReverseMap();
+            CreateMap<GetAllProducts, CreateOrUpdateProductDto>().ReverseMap();
+
         }
     }
 }

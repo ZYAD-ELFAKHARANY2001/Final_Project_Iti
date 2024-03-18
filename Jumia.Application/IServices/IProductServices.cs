@@ -1,6 +1,7 @@
 ﻿using Jumia.Application.Contract;
 using Jumia.Dtos.Product;
 using Jumia.DTOS.ViewResultDtos;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Migrations;
 using System;
 using System.Collections.Generic;
@@ -12,11 +13,13 @@ namespace Jumia.Application.IServices
 {
     public interface IProductServices
     {
-        Task<ResultView<CreateOrUpdateProductDto>> Create(CreateOrUpdateProductDto product);
+        Task<ResultView<CreateOrUpdateProductDto>> Create(CreateOrUpdateProductDto product,List<IFormFile> images);
 
     //    Task<ResultView<CreateOrUpdateProductDTO>> HardDelete(CreateOrUpdateProductDTO product);
     //    Task<ResultView<CreateOrUpdateProductDTO>> SoftDelete(CreateOrUpdateProductDTO product);
         Task<ResultDataForPagination<GetAllProducts>> GetAllPagination(int items, int pagenumber);
-        //Task<CreateOrUpdateProductDTO> GetOne(int ID);
+        Task<ResultView<GetAllProducts>> GetOne(int ID);
+        Task<ResultView<CreateOrUpdateProductDto>> Update(CreateOrUpdateProductDto productDto, List<IFormFile> images);
+        Task<ResultView<CreateOrUpdateProductDto>> Delete(CreateOrUpdateProductDto productDto);
     }
 }

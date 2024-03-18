@@ -1,18 +1,16 @@
 ﻿@model Jumia.Dtos.Product.CreateOrUpdateProductDto
 
 @{
-    ViewData["Title"] = "Create";
-    // Layout = "_Layout";
+    ViewData["Title"] = "Update";
 }
 
-<h1>Create</h1>
+<h1>Update</h1>
 
 <h4>CreateOrUpdateProductDto</h4>
 <hr />
-
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create" asp-controller="Product" method="post" enctype="multipart/form-data">
+        <form asp-action="Update" method="post" asp-controller="Product" enctype="multipart/form-data">
             <div asp-validation-summary="All" class="text-danger"></div>
             
             <div class="form-group">
@@ -60,13 +58,15 @@
                 <input asp-for="BrandName" class="form-control" />
                 <span asp-validation-for="BrandName" class="text-danger"></span>
             </div>
-            <div class="mb-3">
-                <label class="form-label">Image</label>
-                <input asp-for="Images" type="file" class="form-control" multiple>
-                <span asp-validation-for="Images" style="color:red"></span>
-            </div>
+            @*<div class="mb-3">
+                @if (Model.Image != null && Model.Image.Length > 0)
+                {
+                    <label>Current Image:</label>
+                    <div> <img src="data:image/jpeg;base64,@Convert.ToBase64String(Model.Image)" width="200px" height="200px" alt="Current Image" class="img-fluid"> </div>
+                }
+            </div>*@
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
     </div>
@@ -76,6 +76,6 @@
     <a asp-action="Index">Back to List</a>
 </div>
 
-@* @section Scripts {
+@section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-} *@
+}

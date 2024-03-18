@@ -1,5 +1,7 @@
-﻿using Jumia.Application.IServices;
+﻿using AutoMapper;
+using Jumia.Application.IServices;
 using Jumia.Application.Services;
+using Jumia.Dtos.Category;
 using Jumia.Dtos.Product;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,10 +10,14 @@ namespace AdminDashBoard.Controllers
     public class ProductController : Controller
     {
         private readonly IProductServices _productService;
+        private readonly IMapper _mapper;
 
-        public ProductController(IProductServices productService)
+
+        public ProductController(IProductServices productService,IMapper mapper)
         {
             _productService = productService;
+            _mapper = mapper;
+
         }
         // GET: ProductController
         public async Task<ActionResult> GetPagination()
@@ -27,75 +33,91 @@ namespace AdminDashBoard.Controllers
 
         // POST: ProductController/Create
         [HttpPost]
-        public async Task<ActionResult> Create(CreateOrUpdateProductDto Product)
+        public async Task<ActionResult> Create(CreateOrUpdateProductDto ProductDto,List<IFormFile> Images)
         {
-            try
+            if (ModelState.IsValid)
             {
-                if (ModelState.IsValid)
+
+                if (Images != null)
                 {
-                    var Res = await _productService.Create(Product);
-                    if (Res.IsSuccess)
+                    foreach (var img in Images)
                     {
-                        return RedirectToAction(nameof(Index));
-                    }
-                    else
-                    {
-                        ViewBag.Error = Res.Message;
-                        return View(Product);
+                        var imageBytes = new byte[img.Length];
+                        using (var stream = img.OpenReadStream())
+                        {
+                            await stream.ReadAsync(imageBytes, 0, imageBytes.Length);
+                        }
+                        ProductDto.Images.Add(imageBytes);
                     }
                 }
-                else
+
+
+                var res = await _productService.Create(ProductDto, Images);
+
+                if (res.IsSuccess)
                 {
-                    return View(Product);
 
+                    return RedirectToAction("GetPagination");
                 }
+
+
             }
-            catch
-            {
-                return View();
-            }
+            return View(ProductDto);
+
+
+
         }
 
-        // GET: ProductController/Edit/5
-        public ActionResult Edit(int id)
+
+
+        public async Task<ActionResult> Update([FromRoute]int id)
         {
-            return View();
+            var res = await _productService.GetOne(id);
+
+            if (res == null)
+            {
+                return NotFound();
+
+            }
+
+            var productDto = _mapper.Map<CreateOrUpdateProductDto>(res.Entity);
+            return View(productDto);
         }
 
-        // POST: ProductController/Edit/5
+
+
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public async Task<ActionResult> Update(CreateOrUpdateProductDto productDto, List<IFormFile> Image)
         {
-            try
+            if (ModelState.IsValid)
             {
-                return RedirectToAction(nameof(Index));
+
+                var res  = await  _productService.Update(productDto, Image);
+                return RedirectToAction(nameof(GetPagination));
+
             }
-            catch
-            {
-                return View();
-            }
+
+            return View(productDto);
+
         }
 
-        // GET: ProductController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
 
-        // POST: ProductController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+
+
+
+        public async Task<ActionResult> Delete(int id)
         {
-            try
+            var res = await _productService.GetOne(id);
+            if (res == null)
             {
-                return RedirectToAction(nameof(Index));
+                return NotFound();
             }
-            catch
-            {
-                return View();
-            }
+
+            var ProductToDelete = _mapper.Map<CreateOrUpdateProductDto>(res.Entity);
+            await _productService.Delete(ProductToDelete);
+
+
+            return RedirectToAction(nameof(GetPagination));
         }
 
     }

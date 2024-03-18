@@ -19,6 +19,7 @@ namespace Jumia.Dtos.Product
         public string? SubCategoryName { get; set; } // Include for easier presentation
         public int? BrandID { get; set; }
         public string? BrandName { get; set; } // Include for easier presentation
+        public List<byte[]>? Images { get; set; }
         //public ICollection<IFormFile>? Images { get; set; } // Simplified image representation
     }
 }

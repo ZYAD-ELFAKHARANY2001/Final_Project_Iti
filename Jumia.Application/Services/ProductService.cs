@@ -4,15 +4,17 @@ using Jumia.Application.IServices;
 using Jumia.Dtos.Product;
 using Jumia.DTOS.ViewResultDtos;
 using Jumia.Model;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Jumia.Application.Services
 {
-    public class ProductService:IProductServices
+    public class ProductService : IProductServices
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
@@ -45,26 +47,136 @@ namespace Jumia.Application.Services
         }
 
 
-        public async Task<ResultView<CreateOrUpdateProductDto>> Create(CreateOrUpdateProductDto product)
+        //Create
+        public async Task<ResultView<CreateOrUpdateProductDto>> Create(CreateOrUpdateProductDto ProductDto, List<IFormFile> images)
         {
-            var Query = (await _unitOfWork.ProductRepository.GetAllAsync()); // se;ect * from product
-            var OldProduct = Query
-                             .Where(p => p.Name == product.Name)
-                             .FirstOrDefault();
+            var Data = await _unitOfWork.ProductRepository.GetAllAsync();
+            var OldProduct = Data.Where(c => c.Name == ProductDto.Name).FirstOrDefault();
+
             if (OldProduct != null)
             {
-                return new ResultView<CreateOrUpdateProductDto> { Entity = null, IsSuccess = false, Message = "Already Exist" };
+                return new ResultView<CreateOrUpdateProductDto> { Entity = null, IsSuccess = false, Message = "Product Already Exist" };
+
             }
             else
             {
-                var Prd = _mapper.Map<Product>(product);
-                var NewPrd = await _unitOfWork.ProductRepository.CreateAsync(Prd);
-                await _unitOfWork.SaveChangesAsync();
-                var PrdDto = _mapper.Map<CreateOrUpdateProductDto>(NewPrd);
-                return new ResultView<CreateOrUpdateProductDto> { Entity = PrdDto, IsSuccess = true, Message = "Created Successfully" };
+
+                if (images != null)
+                {
+                    foreach (var image in images)
+                    {
+                        using (var memoryStream = new MemoryStream())
+                        {
+                            await image.CopyToAsync(memoryStream);
+
+                            ProductDto.Images.Add(memoryStream.ToArray());
+                        }
+                    }
+                }
+
+
+                var Product = _mapper.Map<Product>(ProductDto);
+                var NewProduct = await _unitOfWork.ProductRepository.CreateAsync(Product);
+                await _unitOfWork.ProductRepository.SaveChangesAsync();
+                var productDto = _mapper.Map<CreateOrUpdateProductDto>(NewProduct);
+
+
+                return new ResultView<CreateOrUpdateProductDto> { Entity = productDto, IsSuccess = true, Message = "Product Created Successfully" };
             }
 
+
         }
+
+        public async Task<ResultView<CreateOrUpdateProductDto>> Update(CreateOrUpdateProductDto productDto, List<IFormFile> images)
+        {
+
+            var Oldproduct = await _unitOfWork.ProductRepository.GetOneAsync(productDto.Id);
+            if (Oldproduct == null)
+            {
+                return new ResultView<CreateOrUpdateProductDto> { Entity = null, IsSuccess = false, Message = "product Not Found!" };
+
+            }
+            else
+            {
+                //_mapper.Map<product>(productDto);
+                _mapper.Map(productDto, Oldproduct);
+                if (images != null)
+                {
+                    foreach (var image in images)
+                    {
+                        using (var memoryStream = new MemoryStream())
+                        {
+                            await image.CopyToAsync(memoryStream);
+
+                            productDto.Images.Add(memoryStream.ToArray());
+                        }
+                    }
+                }
+
+                var UPproduct = await _unitOfWork.ProductRepository.UpdateAsync(Oldproduct);
+                await _unitOfWork.ProductRepository.SaveChangesAsync();
+                var ProductDto = _mapper.Map<CreateOrUpdateProductDto>(UPproduct);
+
+                return new ResultView<CreateOrUpdateProductDto> { Entity = ProductDto, IsSuccess = true, Message = "product Updated Successfully" };
+            }
+        }
+
+
+
+        //}
+
+
+
+        // delete
+        public async Task<ResultView<CreateOrUpdateProductDto>> Delete(CreateOrUpdateProductDto productDto)
+        {
+            try
+            {
+                var product = await _unitOfWork.ProductRepository.GetOneAsync(productDto.Id);
+                if (product == null)
+                {
+                    return new ResultView<CreateOrUpdateProductDto> { Entity = null, IsSuccess = false, Message = "product Not Found!" };
+                }
+
+                await _unitOfWork.ProductRepository.DeleteAsync(product);
+                await _unitOfWork.ProductRepository.SaveChangesAsync();
+
+                var ProductDto = _mapper.Map<CreateOrUpdateProductDto>(product);
+                return new ResultView<CreateOrUpdateProductDto> { Entity = ProductDto, IsSuccess = true, Message = "Deleted Successfully" };
+            }
+            catch (Exception ex)
+            {
+                return new ResultView<CreateOrUpdateProductDto> { Entity = null, IsSuccess = false, Message = ex.Message };
+            }
+        }
+
+
+
+
+
+
+
+        //GetOne
+        public async Task<ResultView<GetAllProducts>> GetOne(int id)
+        {
+            var product = await _unitOfWork.ProductRepository.GetOneAsync(id);
+            if (product == null)
+            {
+                return new ResultView<GetAllProducts> { Entity = null, IsSuccess = false, Message = "Not Found!" };
+            }
+            else
+            {
+                var productDto = _mapper.Map<GetAllProducts>(product);
+
+                return new ResultView<GetAllProducts> { Entity = productDto, IsSuccess = true, Message = "Succses" };
+            }
+        }
+
+       
+
+
+
+
 
         //public async Task<ResultView<CreateOrUpdateProductDto>> HardDelete(CreateOrUpdateProductDto product)
         //{
