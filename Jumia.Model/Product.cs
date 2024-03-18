@@ -24,9 +24,6 @@ namespace Jumia.Model
         [ForeignKey("SubCategory")]
         public int SubCategoryID {  get; set; }
         public virtual SubCategory SubCategory { get; set; }
-        [ForeignKey("Brand")]
-        public int BrandId { get; set; }
-        public virtual Brand Brand { get; set; }
         public virtual ICollection<Review>? Reviews { get; set; }
         public virtual ICollection<OrderItems>? OrderItems { get; set; }
         public ICollection<ProductItems>? Items { get; set; }
