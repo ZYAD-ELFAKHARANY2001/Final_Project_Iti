@@ -1,7 +1,5 @@
 ﻿using AutoMapper;
 using Jumia.Application.Contract;
-using Jumia.Application.IServices;
-using Jumia.Application.Services.IServices;
 using Jumia.Dtos.Category;
 using Jumia.DTOS.ViewResultDtos;
 using Jumia.Model;
@@ -10,6 +8,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
+using Microsoft.AspNetCore.Http;
+using Jumia.Application.IServices;
 
 namespace Jumia.Application.Services
 {
@@ -18,7 +19,7 @@ namespace Jumia.Application.Services
         private readonly ICategoryRepository _repository;
         private readonly IMapper _mapper;
 
-        public CategoryService(ICategoryRepository repository, IMapper mapper)
+        public CategoryService(ICategoryRepository repository, IMapper mapper )
         {
             _repository = repository;
             _mapper = mapper;
@@ -26,7 +27,7 @@ namespace Jumia.Application.Services
 
 
         //Create
-        public async Task<ResultView<CreateOrUpdateCategoryDto>> Create(CreateOrUpdateCategoryDto categoryDto)
+        public async Task<ResultView<CreateOrUpdateCategoryDto>> Create(CreateOrUpdateCategoryDto categoryDto, IFormFile image)
         {
             var Data = await _repository.GetAllAsync();
             var OldCategory = Data.Where(c => c.Name == categoryDto.Name).FirstOrDefault();
@@ -38,6 +39,23 @@ namespace Jumia.Application.Services
             }
             else
             {
+
+                var CategoryWithSameImage = Data.FirstOrDefault(c => c.Image.SequenceEqual(categoryDto.Image));
+                if (CategoryWithSameImage != null)
+                {
+                    return new ResultView<CreateOrUpdateCategoryDto> { Entity = null, IsSuccess = false, Message = "Cannot add the same image for a category added before" };
+                }
+
+                if (image != null && image.Length > 0)
+                {
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        await image.CopyToAsync(memoryStream);
+                        categoryDto.Image = memoryStream.ToArray();
+                    }
+                }
+
+
                 var Category = _mapper.Map<Category>(categoryDto);
                 var NewCategory = await _repository.CreateAsync(Category);
                 await _repository.SaveChangesAsync();
@@ -51,26 +69,53 @@ namespace Jumia.Application.Services
         }
 
 
-
+         
         //Update
-        public async Task<ResultView<CreateOrUpdateCategoryDto>> Update(CreateOrUpdateCategoryDto categoryDto)
+       public async Task<ResultView<CreateOrUpdateCategoryDto>> Update(CreateOrUpdateCategoryDto categoryDto, IFormFile image)
         {
-            var Data = await _repository.GetAllAsync();
-            var OldCategory = Data.FirstOrDefault(c => c.Name == categoryDto.Name && c.Id == categoryDto.Id);
-            if (OldCategory == null)
+            
+            var OldCategory = await _repository.GetOneAsync(categoryDto.Id);
+            if (OldCategory == null) 
             {
                 return new ResultView<CreateOrUpdateCategoryDto> { Entity = null, IsSuccess = false, Message = "Category Not Found!" };
 
             }
+
+
+            var Data = await _repository.GetAllAsync();
+            var CategoryWithSameImage = Data.FirstOrDefault(c => c.Id != categoryDto.Id && c.Image.SequenceEqual(categoryDto.Image));
+
+            if (CategoryWithSameImage != null)
+            {
+                return new ResultView<CreateOrUpdateCategoryDto> { Entity = null, IsSuccess = false, Message = "image already in use by another category." };
+            }
+
+
+            if (image == null || image.Length == 0)
+             {
+                    categoryDto.Image = OldCategory.Image;
+             }
             else
             {
-                var Category = _mapper.Map<Category>(categoryDto);
-                var UPCategory = await _repository.UpdateAsync(Category);
+                    
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        await image.CopyToAsync(memoryStream);
+                        categoryDto.Image = memoryStream.ToArray();
+                    }
+             }
+
+              
+
+
+                _mapper.Map(categoryDto, OldCategory);
+
+                var UPCategory = await _repository.UpdateAsync(OldCategory);
                 await _repository.SaveChangesAsync();
                 var CategoryDto = _mapper.Map<CreateOrUpdateCategoryDto>(UPCategory);
 
                 return new ResultView<CreateOrUpdateCategoryDto> { Entity = CategoryDto, IsSuccess = true, Message = "Category Updated Successfully" };
-            }
+            
 
 
 
@@ -104,9 +149,9 @@ namespace Jumia.Application.Services
 
 
         // GetAll
-        public async Task<ResultDataForPagination<GetAllCategoryDto>> GetAll(int item, int pagnumber)
+        public async Task<ResultDataForPagination<GetAllCategoryDto>> GetAll(int item , int pagnumber)
         {
-            var AllData = await _repository.GetAllAsync();
+            var AllData =( await _repository.GetAllAsync());
             var Categorys = AllData.Skip(item * (pagnumber - 1)).Take(item)
              .Select(c => new GetAllCategoryDto
              {
@@ -114,7 +159,7 @@ namespace Jumia.Application.Services
                  Name = c.Name,
                  Description = c.Description,
                  Image = c.Image,
-
+                 
 
              }).ToList();
 
@@ -147,56 +192,6 @@ namespace Jumia.Application.Services
             }
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+       
     }
 }
