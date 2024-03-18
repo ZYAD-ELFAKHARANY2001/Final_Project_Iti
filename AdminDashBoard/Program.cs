@@ -19,23 +19,26 @@ namespace AdminDashBoard
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
-            builder.Services.AddScoped<IProductRepository, ProductRepository>();
-            /* builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+            //builder.Services.AddScoped<IProductRepository, ProductRepository>();
+             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
              builder.Services.AddScoped<ISubCategoryRepository, SubCategoryRepository>();
              builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
              builder.Services.AddScoped<IOrderRepository, OrderRepository>();
              builder.Services.AddScoped<IOrderItemsRepository, OrderItemRepository>();
              builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
-             builder.Services.AddScoped<IShippmentRepository, ShippmentRepository>();*/
+             builder.Services.AddScoped<IShippmentRepository, ShippmentRepository>();
             //builder.Services.AddScoped<IProductServices, ProductService>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IUserRoleRepository, UserRoleRepository>();
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IRoleService, RoleService>();
-            builder.Services.AddScoped<IProductServices, ProductService>();
-
+            builder.Services.AddScoped<ICategoryService, CategoryService>();
+            builder.Services.AddScoped<ISubCategoryService, SubCategoryService>();
+            builder.Services.AddScoped<IOrderService, OrderService>();
+            builder.Services.AddScoped<IOrderItemService, OrderItemService>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-            builder.Services.AddScoped<IProductServices,ProductService>();
+
+
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             builder.Services.AddIdentity<UserIdentity, UserRole>()
             .AddEntityFrameworkStores<JumiaContext>()

@@ -127,8 +127,9 @@ namespace Jumia.Context.Migrations
                     b.Property<DateTime?>("ShippedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("TotalAmount")
                         .HasColumnType("int");
@@ -246,7 +247,7 @@ namespace Jumia.Context.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("BrandID")
+                    b.Property<int>("BrandId")
                         .HasColumnType("int");
 
                     b.Property<string>("CreatedBy")
@@ -291,7 +292,7 @@ namespace Jumia.Context.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BrandID");
+                    b.HasIndex("BrandId");
 
                     b.HasIndex("SubCategoryID");
 
@@ -476,7 +477,7 @@ namespace Jumia.Context.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("CategoryId")
+                    b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
                     b.Property<string>("CreatedBy")
@@ -754,7 +755,9 @@ namespace Jumia.Context.Migrations
                 {
                     b.HasOne("Jumia.Model.Brand", "Brand")
                         .WithMany("Products")
-                        .HasForeignKey("BrandID");
+                        .HasForeignKey("BrandId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Jumia.Model.SubCategory", "SubCategory")
                         .WithMany("Products")
@@ -812,9 +815,13 @@ namespace Jumia.Context.Migrations
 
             modelBuilder.Entity("Jumia.Model.SubCategory", b =>
                 {
-                    b.HasOne("Jumia.Model.Category", null)
+                    b.HasOne("Jumia.Model.Category", "Category")
                         .WithMany("SubCategory")
-                        .HasForeignKey("CategoryId");
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>

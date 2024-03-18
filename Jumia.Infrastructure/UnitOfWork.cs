@@ -104,18 +104,18 @@ namespace Jumia.Infrastructure
         //{
         //    if (_repositories == null) _repositories = new Hashtable();
 
-        //    var type = typeof(TEntity).Name;
+           /* var type = typeof(TEntity).Name;
 
-        //    if (!_repositories.ContainsKey(type))
-        //    {
-        //        var repositoryType = typeof(Repository<TEntity,Tid>);
-        //        var repositoryInstance = Activator.CreateInstance(repositoryType.MakeGenericType(typeof(TEntity)), _jumiaContext);
+            if (!_repositories.ContainsKey(type))
+            {
+                var repositoryType = typeof(Repository<TEntity,Tid>);
+                var repositoryInstance = Activator.CreateInstance(repositoryType.MakeGenericType(typeof(TEntity)), _jumiaContext);
 
-        //        _repositories.Add(type, repositoryInstance);
-        //    }
+                _repositories.Add(type, repositoryInstance);
+            }
 
-        //    return (IRepository<TEntity,Tid>)_repositories[type];
+            return (IRepository<TEntity,Tid>)_repositories[type];*/
 
-        //}
+        }
     }
-}
+

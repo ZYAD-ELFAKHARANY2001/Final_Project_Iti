@@ -12,8 +12,13 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Jumia.Context.Migrations
 {
     [DbContext(typeof(JumiaContext))]
-    [Migration("20240316210812_Start2")]
-    partial class Start2
+<<<<<<<< HEAD:Jumia.Context/Migrations/20240316210555_Start.Designer.cs
+    [Migration("20240316210555_Start")]
+    partial class Start
+========
+    [Migration("20240312120558_init")]
+    partial class init
+>>>>>>>> d238d6b7277560ecac8e6d2f5fb97094f41f4aa3:Jumia.Context/Migrations/20240312120558_init.Designer.cs
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -48,7 +53,11 @@ namespace Jumia.Context.Migrations
 
                     b.HasKey("BrandID");
 
+<<<<<<<< HEAD:Jumia.Context/Migrations/20240316210555_Start.Designer.cs
                     b.ToTable("Brand");
+========
+                    b.ToTable("Brands");
+>>>>>>>> d238d6b7277560ecac8e6d2f5fb97094f41f4aa3:Jumia.Context/Migrations/20240312120558_init.Designer.cs
                 });
 
             modelBuilder.Entity("Jumia.Model.Category", b =>
@@ -62,7 +71,7 @@ namespace Jumia.Context.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("CreatedDate")
+                    b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
@@ -103,7 +112,7 @@ namespace Jumia.Context.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("CreatedDate")
+                    b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("CustomerId")
@@ -130,8 +139,9 @@ namespace Jumia.Context.Migrations
                     b.Property<DateTime?>("ShippedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("TotalAmount")
                         .HasColumnType("int");
@@ -165,7 +175,7 @@ namespace Jumia.Context.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("CreatedDate")
+                    b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int?>("Discount")
@@ -215,7 +225,7 @@ namespace Jumia.Context.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("CreatedDate")
+                    b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<decimal?>("CreditAmount")
@@ -249,13 +259,17 @@ namespace Jumia.Context.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+<<<<<<<< HEAD:Jumia.Context/Migrations/20240316210555_Start.Designer.cs
                     b.Property<int?>("BrandID")
+========
+                    b.Property<int>("BrandId")
+>>>>>>>> d238d6b7277560ecac8e6d2f5fb97094f41f4aa3:Jumia.Context/Migrations/20240312120558_init.Designer.cs
                         .HasColumnType("int");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("CreatedDate")
+                    b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<decimal?>("Discount")
@@ -294,7 +308,11 @@ namespace Jumia.Context.Migrations
 
                     b.HasKey("Id");
 
+<<<<<<<< HEAD:Jumia.Context/Migrations/20240316210555_Start.Designer.cs
                     b.HasIndex("BrandID");
+========
+                    b.HasIndex("BrandId");
+>>>>>>>> d238d6b7277560ecac8e6d2f5fb97094f41f4aa3:Jumia.Context/Migrations/20240312120558_init.Designer.cs
 
                     b.HasIndex("SubCategoryID");
 
@@ -315,7 +333,7 @@ namespace Jumia.Context.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("CreatedDate")
+                    b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Images")
@@ -363,7 +381,7 @@ namespace Jumia.Context.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("CreatedDate")
+                    b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("CustomerId")
@@ -427,7 +445,7 @@ namespace Jumia.Context.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("CreatedDate")
+                    b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("FirstName")
@@ -479,13 +497,13 @@ namespace Jumia.Context.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("CategoryId")
+                    b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("CreatedDate")
+                    b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
@@ -757,7 +775,13 @@ namespace Jumia.Context.Migrations
                 {
                     b.HasOne("Jumia.Model.Brand", "Brand")
                         .WithMany("Products")
+<<<<<<<< HEAD:Jumia.Context/Migrations/20240316210555_Start.Designer.cs
                         .HasForeignKey("BrandID");
+========
+                        .HasForeignKey("BrandId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+>>>>>>>> d238d6b7277560ecac8e6d2f5fb97094f41f4aa3:Jumia.Context/Migrations/20240312120558_init.Designer.cs
 
                     b.HasOne("Jumia.Model.SubCategory", "SubCategory")
                         .WithMany("Products")
@@ -815,9 +839,13 @@ namespace Jumia.Context.Migrations
 
             modelBuilder.Entity("Jumia.Model.SubCategory", b =>
                 {
-                    b.HasOne("Jumia.Model.Category", null)
+                    b.HasOne("Jumia.Model.Category", "Category")
                         .WithMany("SubCategory")
-                        .HasForeignKey("CategoryId");
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
