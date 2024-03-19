@@ -15,7 +15,7 @@ namespace Jumia.Dtos.ProductItems
         public string? Pro_Size { get; set; }
         public string? Color { get; set; }
         public int? Storge { get; set; }  //1GB ....
-        public HashSet<byte[]>? Images { get; set; }
+        public List<byte[]>? Images { get; set; }
         [ForeignKey("Product")]
         public int Pro_Id { get; set; }
     }

@@ -42,6 +42,7 @@ namespace AdminDashBoard
             builder.Services.AddScoped<IShippmentService, ShippmentService>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IProductServices,ProductService>();
+            builder.Services.AddScoped<IProductItemsService, ProductItemsService>();
 
 
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

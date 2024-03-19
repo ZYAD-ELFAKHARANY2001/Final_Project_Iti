@@ -4,6 +4,7 @@ using Jumia.Application.IServices;
 using Jumia.Dtos.Category;
 using Jumia.Dtos.Order;
 using Jumia.Dtos.OrderItems;
+using Jumia.Dtos.Product;
 using Jumia.Dtos.ProductItems;
 using Jumia.DTOS.ViewResultDtos;
 using Jumia.Model;
@@ -14,6 +15,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Jumia.Application.Services
@@ -35,37 +37,41 @@ namespace Jumia.Application.Services
 
         
 
-        public async Task<ResultView<CreatOrUpdateProductItemsDTO>> Create(CreatOrUpdateProductItemsDTO creatOrUpdateProductItemsDTO, IFormFile image)
+        public async Task<ResultView<CreatOrUpdateProductItemsDTO>> Create(CreatOrUpdateProductItemsDTO creatOrUpdateProductItemsDTO, List<IFormFile> images)
         {
-            var Data = await _productItemsRepository.GetAllAsync();
+            var Data = await _unitOfWork.ProductItemsRepository.GetAllAsync();
             var OldProItems = Data.Where(c => c.Id == creatOrUpdateProductItemsDTO.Id).FirstOrDefault();
 
             if (OldProItems != null)
             {
-                return new ResultView<CreatOrUpdateProductItemsDTO> { Entity = null, IsSuccess = false, Message = "Category Already Exist" };
+                return new ResultView<CreatOrUpdateProductItemsDTO> { Entity = null, IsSuccess = false, Message = "Product Item Already Exist" };
 
             }
             else
             {
 
-                var CategoryWithSameImage = Data.FirstOrDefault(c => c.Images.SequenceEqual(creatOrUpdateProductItemsDTO.Images));
-                if (CategoryWithSameImage != null)
+                var ProductItemWithSameImage = Data.FirstOrDefault(c => c.Images.SequenceEqual(creatOrUpdateProductItemsDTO.Images));
+                if (ProductItemWithSameImage != null)
                 {
                     return new ResultView<CreatOrUpdateProductItemsDTO> { Entity = null, IsSuccess = false, Message = "Cannot add the same image for a category added before" };
                 }
 
-                if (image != null && image.Length > 0)
+                if (images != null)
                 {
-                    using (var memoryStream = new MemoryStream())
+                    foreach (var image in images)
                     {
-                        await image.CopyToAsync(memoryStream);
-                        //creatOrUpdateProductItemsDTO.Images = memoryStream.ToArray();
+                        using (var memoryStream = new MemoryStream())
+                        {
+                            await image.CopyToAsync(memoryStream);
+
+                            ProductItemWithSameImage.Images.Add(memoryStream.ToArray());
+                        }
                     }
                 }
 
                 var proItems = _mapper.Map<ProductItems>(creatOrUpdateProductItemsDTO);
-                var proItemEdit = await _productItemsRepository.CreateAsync(proItems);
-                await _productItemsRepository.SaveChangesAsync();
+                var proItemEdit = await _unitOfWork.ProductItemsRepository.CreateAsync(proItems);
+                await  _unitOfWork.SaveChangesAsync();
                 var ordDto = _mapper.Map<CreatOrUpdateProductItemsDTO>(proItemEdit);
 
                
@@ -76,9 +82,6 @@ namespace Jumia.Application.Services
 
 
         }
-
-
-
 
         public async Task<CreatOrUpdateProductItemsDTO> GetProductItemsByID(int id)
         {
@@ -94,10 +97,6 @@ namespace Jumia.Application.Services
                 throw;
             }
         }
-
-
-
-
 
         public async Task<ResultView<CreatOrUpdateProductItemsDTO>> HardDelete(int id)
         {
@@ -121,53 +120,47 @@ namespace Jumia.Application.Services
 
             }
         }
-
-
-
-
-        public async Task<ResultView<CreatOrUpdateProductItemsDTO>> Update(CreatOrUpdateProductItemsDTO creatOrUpdateProductItemsDTO, IFormFile image)
+        public async Task<ResultView<CreatOrUpdateProductItemsDTO>> Update(CreatOrUpdateProductItemsDTO creatOrUpdateProductItemsDTO, List<IFormFile> images)
         {
             try
             {
-                var OldData = await _productItemsRepository.GetOneAsync(creatOrUpdateProductItemsDTO.Id);
+                var OldProductItem = await _unitOfWork.ProductItemsRepository.GetOneAsync(creatOrUpdateProductItemsDTO.Id);
 
-                if (OldData == null)
+                if (OldProductItem == null)
                 {
                     return new ResultView<CreatOrUpdateProductItemsDTO> { Entity = null, IsSuccess = false, Message = "ProductItems Not Found!" };
 
                 }
-                var Data = await _productItemsRepository.GetAllAsync();
-                var ProductItemsWithSameImage = Data.FirstOrDefault(c => c.Id != creatOrUpdateProductItemsDTO.Id && c.Images.SequenceEqual(creatOrUpdateProductItemsDTO.Images));
+                var Data = await _unitOfWork.ProductItemsRepository.GetAllAsync();
 
-                if (ProductItemsWithSameImage != null)
-                {
-                    return new ResultView<CreatOrUpdateProductItemsDTO> { Entity = null, IsSuccess = false, Message = "image already in use by another category." };
-                }
-
-
-                if (image == null || image.Length == 0)
+                if (images == null)
                 {
                     creatOrUpdateProductItemsDTO.Images = creatOrUpdateProductItemsDTO.Images;
                 }
                 else
                 {
-
-                    using (var memoryStream = new MemoryStream())
+                    _mapper.Map(creatOrUpdateProductItemsDTO, OldProductItem);
+                    if (images != null)
                     {
-                        await image.CopyToAsync(memoryStream);
-                        //creatOrUpdateProductItemsDTO.Images = memoryStream.ToArray();
-                    }
-                }
-                _mapper.Map(creatOrUpdateProductItemsDTO, OldData);
+                        foreach (var image in images)
+                        {
+                            using (var memorystream = new MemoryStream())
+                            {
+                                await image.CopyToAsync(memorystream);
 
-                var UPProductItems = await _productItemsRepository.UpdateAsync(OldData);
-                await _productItemsRepository.SaveChangesAsync();
+                               creatOrUpdateProductItemsDTO.Images.Add(memorystream.ToArray());
+                            }
+                        }
+                    }
+                   
+                }
+                _mapper.Map(creatOrUpdateProductItemsDTO, OldProductItem);
+
+                var UPProductItems = await _unitOfWork.ProductItemsRepository.UpdateAsync(OldProductItem);
+                await _unitOfWork.SaveChangesAsync();
                 var coruProductitems = _mapper.Map<CreateOrUpdateCategoryDto>(UPProductItems);
 
                 return new ResultView<CreatOrUpdateProductItemsDTO> { Entity = creatOrUpdateProductItemsDTO, IsSuccess = true, Message = "Category Updated Successfully" };
-
-
-
 
             }
 

@@ -43,6 +43,7 @@ namespace Jumia.Infrastructure
         public IReviewRepository ReviewRepository => GetRepository<IReviewRepository, ReviewRepository>();
         public IShippmentRepository ShippmentRepository => GetRepository<IShippmentRepository, ShippmentRepository>();
         public ISubCategoryRepository SubCategoryRepository => GetRepository<ISubCategoryRepository, SubCategoryRepository>();
+        public IProductItemsRepository? ProductItemsRepository => GetRepository<IProductItemsRepository, ProductItemsRepository>();
 
         public async Task SaveChangesAsync()
         {

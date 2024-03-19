@@ -16,6 +16,7 @@ namespace Jumia.Application.Contract
         IReviewRepository? ReviewRepository { get;  }
         IShippmentRepository? ShippmentRepository { get;  }
         ISubCategoryRepository? SubCategoryRepository { get; }
+        IProductItemsRepository? ProductItemsRepository { get; }
         //IRepository<TEntity,Tid> Repository<TEntity,Tid>() where TEntity : class;
         Task SaveChangesAsync();
     }
